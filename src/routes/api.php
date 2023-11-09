@@ -19,3 +19,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('register', [App\Http\Controllers\Auth\AuthController::class, 'apiregister']);
+
+Route::middleware(['api'])->group(function () {
+    Route::resource('note', \App\Http\Controllers\NoteController::class);
+    //Route::post('note/addfile/{id}', 'NoteController@addfile')->name('note.addfile');
+    //Route::get('note/restore/{id}', 'NoteController@restore')->name('note.restore');
+});

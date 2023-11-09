@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Note;
 use Tests\TestCase;
 
 class NoteTest extends TestCase
@@ -34,5 +35,49 @@ class NoteTest extends TestCase
         $this->assertTrue(isset($response['access_token']));
 
         return $response['access_token'];
+    }
+
+    /**
+     * Added new note.
+     *
+     * @param string $token
+     *
+     * @depends test_register
+     *
+     * @return array
+     */
+    public function test_add_note($token): array
+    {
+        $response = $this->postJson(route('note.store'));
+        $response
+            ->assertStatus(401)
+            ->assertJson([
+                'message' => 'Unauthenticated.'
+            ]);
+
+        $response = $this->postJson(route('note.store') . '?token=' . $token);
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'note' => ['The note field is required.'],
+                ],
+            ]);
+
+        $note = Note::factory()->make();
+        $response = $this->postJson(route('note.store') . '?token=' . $token, [
+            'note' => $note->text,
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'text' => $note->text,
+            ]);
+
+        return [
+            'token' => $token,
+            'id' => $response['id'],
+        ];
     }
 }
