@@ -46,7 +46,7 @@ class NoteTest extends TestCase
      *
      * @return array
      */
-    public function test_add_note($token): array
+    public function test_add_note(string $token): array
     {
         $response = $this->postJson(route('note.store'));
         $response
@@ -59,7 +59,7 @@ class NoteTest extends TestCase
         $response
             ->assertStatus(422)
             ->assertJson([
-                'message' => 'The given data was invalid.',
+                'message' => 'The note field is required.',
                 'errors' => [
                     'note' => ['The note field is required.'],
                 ],

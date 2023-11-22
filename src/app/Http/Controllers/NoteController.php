@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Services\NoteService;
+use App\Models\Note;
+use App\Http\Resources\NoteResource;
+use App\Http\Requests\NoteStoreRequest;
 
 class NoteController extends Controller
 {
@@ -37,9 +41,14 @@ class NoteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(NoteStoreRequest $request): JsonResponse
     {
-        //
+        $note = Note::create([
+            'text' => $request->note,
+            'user_id' => auth()->user()->id,
+        ]);
+
+        return response()->json(NoteResource::make($note));
     }
 
     /**
