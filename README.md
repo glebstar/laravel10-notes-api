@@ -11,4 +11,5 @@ User creating notes, adding files to notes. Work with api can be seen in the att
 + Run `docker-compose exec php-fpm bash`
 + Run `composer install`
 + Run `php artisan migrate`
++ Run `php artisan jwt:secret`
 + Run `php artisan test`
