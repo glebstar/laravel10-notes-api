@@ -78,7 +78,7 @@ class NoteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id): JsonResponse
     {
         $note = Note::where ('id', $id)
             ->first ();
@@ -93,5 +93,30 @@ class NoteController extends Controller
 
         $note->delete();
         return response ()->json (['deleted' => $id]);
+    }
+
+    /**
+     * Recovers deleted note
+     *
+     * @param integer $id Note ID
+     *
+     * @return JsonResponse
+     */
+    public function restore(int $id): JsonResponse
+    {
+        $note = Note::withTrashed()
+            ->where ('id', $id)
+            ->first ();
+
+        if (! $note) {
+            return response ()->json (['error' => 'not found'], 404);
+        }
+
+        if ($note->user_id != auth()->user()->id) {
+            return response ()->json (['error' => 'not access'], 401);
+        }
+
+        $note->restore();
+        return response ()->json (NoteResource::make($note));
     }
 }
