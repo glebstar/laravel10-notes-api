@@ -80,4 +80,23 @@ class NoteTest extends TestCase
             'id' => $response['id'],
         ];
     }
+
+    /**
+     * Delete a note
+     *
+     * @param array $params
+     *
+     * @return void
+     * @depends test_add_note
+     *
+     */
+    public function testDeletedNote(array $params): void
+    {
+        $response = $this->delete(route('note.destroy', $params['id']) . '?token=' . $params['token']);
+        $response
+            ->assertOk()
+            ->assertJson([
+                'deleted' => $params['id']
+            ]);
+    }
 }

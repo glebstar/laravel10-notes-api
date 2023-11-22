@@ -80,6 +80,18 @@ class NoteController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $note = Note::where ('id', $id)
+            ->first ();
+
+        if(! $note) {
+            return response ()->json (['error' => 'not found'], 404);
+        }
+
+        if ($note->user_id != auth()->user()->id) {
+            return response ()->json (['error' => 'not access'], 401);
+        }
+
+        $note->delete();
+        return response ()->json (['deleted' => $id]);
     }
 }
