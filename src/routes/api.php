@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('register', [App\Http\Controllers\Auth\AuthController::class, 'apiregister']);
 
 Route::middleware(['api'])->group(function () {
-    Route::resource('note', \App\Http\Controllers\NoteController::class);
-    Route::post('note/addfile/{id}', [\App\Http\Controllers\NoteController::class, 'addfile'])->name('note.addfile');
-    Route::get('note/restore/{id}', [\App\Http\Controllers\NoteController::class, 'restore'])->name('note.restore');
+    Route::resource('note', NoteController::class);
+    Route::post('note/addfile/{id}', [NoteController::class, 'addfile'])->name('note.addfile');
+    Route::get('note/restore/{id}', [NoteController::class, 'restore'])->name('note.restore');
 });

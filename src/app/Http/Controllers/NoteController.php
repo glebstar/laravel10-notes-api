@@ -63,10 +63,23 @@ class NoteController extends Controller
 
     /**
      * Display the specified resource.
+     *
+     * @param int $id Note id
      */
-    public function show(string $id)
+    public function show(int $id): JsonResponse
     {
-        //
+        $note = Note::where ('id', $id)
+            ->first ();
+
+        if (! $note) {
+            return response ()->json (['error' => 'not found'], 404);
+        }
+
+        if ($note->user_id != auth()->user()->id) {
+            return response ()->json (['error' => 'not access'], 401);
+        }
+
+        return response ()->json (NoteResource::make($note));
     }
 
     /**

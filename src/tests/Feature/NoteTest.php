@@ -83,6 +83,23 @@ class NoteTest extends TestCase
     }
 
     /**
+     * Get one Note
+     *
+     * @param array $params
+     * @return void
+     * @depends test_add_note
+     */
+    public function test_get_note(array $params): void
+    {
+        $response = $this->get(route('note.show', $params['id']) . '?token=' . $params['token']);
+        $response
+            ->assertOk()
+            ->assertJson([
+                'id' => $params['id']
+            ]);
+    }
+
+    /**
      * Delete a note
      *
      * @param array $params
