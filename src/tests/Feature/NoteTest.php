@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\Note;
 use Tests\TestCase;
+use Illuminate\Http\UploadedFile;
 
 class NoteTest extends TestCase
 {
@@ -117,5 +118,45 @@ class NoteTest extends TestCase
             ->assertJson([
                 'id' => $params['id']
             ]);
+    }
+
+    /**
+     * Added attache for note.
+     *
+     * @param array $params token and noteId
+     *
+     * @depends test_add_note
+     *
+     * @return void
+     */
+    public function test_add_attache_for_note(array $params): void
+    {
+        // added atache
+        copy (__DIR__ . '/_files/_test.jpg', __DIR__ . '/_files/test.jpg');
+        $file = new UploadedFile (__DIR__ . '/_files/test.jpg', 'test.jpg', 'image/jpeg', null, true, true);
+
+        $response = $this->postJson(route('note.addfile', $params['id']) . '?token=' . $params['token'], [
+            'attache' => $file,
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'file' => $params['id'] . '.jpg',
+            ]);
+    }
+
+    /**
+     * Get notes for user
+     *
+     * @param array $params token and noteId
+     *
+     * @depends test_add_note
+     *
+     * @return void
+     */
+    public function test_get_notes(array $params): void
+    {
+        $response = $this->get(route('note.index') . '?token=' . $params['token']);
+        $response->assertOk();
     }
 }

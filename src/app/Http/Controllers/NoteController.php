@@ -8,6 +8,7 @@ use App\Services\NoteService;
 use App\Models\Note;
 use App\Http\Resources\NoteResource;
 use App\Http\Requests\NoteStoreRequest;
+use App\Http\Requests\NoteAddFileRequest;
 
 class NoteController extends Controller
 {
@@ -24,10 +25,19 @@ class NoteController extends Controller
 
     /**
      * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $page = (int)$request->input ('page');
+
+        return response ()->json (
+            NoteResource::collection(
+                $this->noteService->listNotes($page)
+            )
+        );
     }
 
     /**
@@ -117,6 +127,32 @@ class NoteController extends Controller
         }
 
         $note->restore();
+        return response ()->json (NoteResource::make($note));
+    }
+
+    /**
+     * Adds a file to a note
+     *
+     * @param integer $id Note ID
+     * @param NoteAddFileRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function addfile(int $id,  NoteAddFileRequest $request): JsonResponse
+    {
+        $note = Note::where ('id', $id)
+            ->first ();
+
+        if (! $note) {
+            return response ()->json (['error' => 'not found'], 404);
+        }
+
+        if ($note->user_id != auth()->user()->id) {
+            return response ()->json (['error' => 'not access'], 401);
+        }
+
+        $note = $this->noteService->addfile($note, $request->file ('attache'), $id);
+
         return response ()->json (NoteResource::make($note));
     }
 }

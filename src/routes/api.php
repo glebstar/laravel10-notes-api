@@ -22,6 +22,6 @@ Route::post('register', [App\Http\Controllers\Auth\AuthController::class, 'apire
 
 Route::middleware(['api'])->group(function () {
     Route::resource('note', \App\Http\Controllers\NoteController::class);
-    //Route::post('note/addfile/{id}', 'NoteController@addfile')->name('note.addfile');
+    Route::post('note/addfile/{id}', [\App\Http\Controllers\NoteController::class, 'addfile'])->name('note.addfile');
     Route::get('note/restore/{id}', [\App\Http\Controllers\NoteController::class, 'restore'])->name('note.restore');
 });
